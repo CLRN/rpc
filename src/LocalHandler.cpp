@@ -162,19 +162,14 @@ public:
         // parse request from stream
         details::ReadStream::Read(*stream, *rawRequest);
 
-        // obtain request type
-        const auto type = methodDesc->options().GetExtension(proto::Stream);
-        if (type == proto::In || type == proto::InOut)
+        // assign stream if more data exist
+        const auto pos = stream->tellg();
+        stream->seekg(0, std::ios::end);
+        if (pos != stream->tellg())
         {
-            // assign stream if more data exist
-            const auto pos = stream->tellg();
-            stream->seekg(0, std::ios::end);
-            if (pos != stream->tellg())
-            {
-                stream->clear();
-                stream->seekg(pos);
-                dynamic_cast<details::StreamHolder&>(*rawRequest).Stream(stream);
-            }
+            stream->clear();
+            stream->seekg(pos);
+            dynamic_cast<details::StreamHolder&>(*rawRequest).Stream(stream);
         }
 
         struct ResponseAccess : public details::ResponseHolder

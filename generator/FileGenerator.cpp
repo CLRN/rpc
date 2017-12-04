@@ -1,13 +1,6 @@
 #include "FileGenerator.h"
 #include "ServiceGenerator.h"
 #include <google/protobuf/descriptor.pb.h>
-//#include <google/protobuf/compiler/cpp/cpp_helpers.h>
-
-#include <map>
-#include <sstream>
-
-#include <boost/lexical_cast.hpp>
-
 
 namespace clrn
 {

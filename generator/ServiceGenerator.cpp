@@ -3,11 +3,6 @@
 
 #include <google/protobuf/io/printer.h>
 
-#pragma warning(push)
-#pragma warning(disable: 4127)
-//#include <google/protobuf/stubs/strutil.h>
-#pragma warning(pop)
-
 namespace google
 {
 namespace protobuf
@@ -154,12 +149,12 @@ void ServiceGenerator::GenerateImplementation(io::Printer* printer)
     printer->Print(vars_, "$classname$::~$classname$() {}\n"
         "\n"
         "const ::google::protobuf::ServiceDescriptor& $classname$::descriptor() {\n"
-        "  protobuf_AssignDescriptorsOnce();\n"
+        //"  protobuf_AssignDescriptorsOnce();\n"
         "  return *$classname$_descriptor_;\n"
         "}\n"
         "\n"
         "const ::google::protobuf::ServiceDescriptor& $classname$::GetDescriptor() {\n"
-        "  protobuf_AssignDescriptorsOnce();\n"
+        //"  protobuf_AssignDescriptorsOnce();\n"
         "  return *$classname$_descriptor_;\n"
         "}\n"
         "\n"
