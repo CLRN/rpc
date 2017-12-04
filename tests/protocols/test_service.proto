@@ -1,0 +1,27 @@
+// Namespace
+package proto.test;
+
+import "rpc_base.proto";
+
+option py_generic_services = true;
+
+message Request
+{
+    required uint32 Data = 1;
+    optional bytes Payload = 2;
+}
+
+message Response
+{
+    required uint32 Data = 1;
+    optional bytes Payload = 2;
+}
+
+service TestService
+{
+    option (ServiceId) = 1000;
+    
+    rpc TestMethod(Request)     returns(Response)   { option(Stream) = InOut;}
+    rpc TestEvent(Empty)        returns(Empty);
+    rpc TestData(Empty)         returns(Empty)      { option(Stream) = In;}
+}

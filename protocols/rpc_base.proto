@@ -1,0 +1,177 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/descriptor.proto";
+
+option py_generic_services = true;
+
+extend google.protobuf.EnumValueOptions
+{
+    // Enum text description
+    string text  = 70000;
+}
+
+enum HttpMethodType
+{
+    Get         = 0 [(text) = "GET"];
+    Post        = 1 [(text) = "POST"];
+    Delete      = 2 [(text) = "DELETE"];
+    Put         = 3 [(text) = "PUT"];
+}
+
+enum MethodStreamType
+{
+    No      = 0;
+    In      = 1;
+    Out     = 2;
+    InOut   = 3;
+}   
+    
+message HttpMethodDescription
+{
+    string         Url             = 1;    // Method url
+    HttpMethodType Method          = 2;    // Http Method type
+    string         ContentType     = 3;    // Http content type
+    bool           AuthNotRequired = 4;    // check user auth by default
+    bool           SetCookie       = 5;    // set reponse fields to cookie values
+    string         SessionCookie   = 6;   // name of cookie which store user id
+    bool           IgnoreUnknown   = 7;    // check json contents strictly while converting to protobuf otherwise unknown fields will be ignored
+}
+
+message HttpHeaders
+{
+    message Header
+    {
+        string Name                 = 1;
+        string Value                = 2;
+    }
+    repeated Header Headers         = 1;
+}
+
+message HttpError
+{
+    uint32 Code            = 1;
+    string Message         = 2;
+}
+
+extend google.protobuf.ServiceOptions
+{
+    // Service identifier
+    uint32 ServiceId          = 60000;
+    bool   IsEventHub         = 60005;
+}
+
+extend google.protobuf.MethodOptions
+{
+    HttpMethodDescription Web  = 60001;
+    MethodStreamType Stream    = 60002;
+    string Comment             = 60003;    // google allows to feth comments only from message fields, so this option may be used to comment rpc methods
+    string Queue               = 60004;    // queue name for method
+}
+
+// base packet for all messages
+message BasePacket
+{
+    enum DirectionType
+    {
+        Request     = 0;
+        Response    = 1;
+    }
+    
+    enum DispatchType
+    {
+        Disabled    = 0;
+        Any         = 1;                        // dispatch to any service
+        All         = 2;                        // dispatch to all instances with empty response
+        Id          = 3;                        // dispatch to instance with concrete identifier
+        Load        = 4;                        // dispatch to instance with lowest request counter
+        CpuLoad     = 5;                        // dispatch to instance with lowest cpu load
+        Closest     = 6;                        // dispatch to instance with lowest ping
+    }
+    
+    uint32          Method          = 1;    // method id
+    uint32          ServiceId       = 2;    // service id
+    uint32          PacketId        = 3;    // packet identifier, used to map request and response, if not set response will not be sent
+    DirectionType   Direction       = 4;    // packet direction 
+    bytes           Error           = 5;    // error message
+    DispatchType    Dispatch        = 6;    // packet dispatch type
+    string          Instance        = 7;    // receiver instance id
+    repeated string Debug           = 8;    // debug info
+    uint32          Ttl             = 9;    // maximum number of hops between caller and destination instance
+    uint32          ErrorId         = 10;   // error identifier
+    string          CallerId        = 11;   // caller instance id
+    uint64          UserId          = 12;   // user id
+    string          NetworkId       = 13;   // virtual network identifier    
+    repeated string VisitedNodes    = 14;   // list of visited nodes, available only for event packets
+    string          UserIp          = 15;   // user IP address
+}
+
+message Empty
+{
+}
+
+message RpcInfo
+{
+    message Property
+    {
+        string Name                    = 1;
+        bytes Value                    = 2;
+    }
+
+    message Instance
+    {
+        repeated uint32     ProvidedServices        = 1;    // services provided by rpc instance endpoint
+        string              Id                      = 2;    // instance identifier
+        uint32              Ping                    = 3;    // ping to instance
+        repeated Property   Properties              = 4;    // various session properties
+        repeated string     NetworkId               = 5;    // virtual network identifiers    
+        repeated uint32     ServiceDistances        = 10;   // distance in hops to the provided services(0 - means local, 1 - means neighbor) size of the field always equal to ProvidedServices size
+    }
+    
+    message Instances
+    {
+        repeated Instance Instances             = 1;
+    }
+    
+    message PacketList
+    {
+        repeated uint32     Packets             = 1;        // packet identifiers
+    }
+}
+
+message Network
+{
+    message InstanceWithNeighbors
+    {
+        RpcInfo.Instance Instance               = 1;
+        repeated string Neighbors               = 2;
+    }
+
+    repeated InstanceWithNeighbors Nodes        = 1;
+    string Graph                                = 2;
+}
+
+// Registration service
+service RegistrationService
+{
+    option (ServiceId) = 0;
+    rpc Register(RpcInfo.Instance)     returns(RpcInfo.Instance);   // register on server
+    rpc GetInfo(Empty)                 returns(RpcInfo.Instances);  // get info about server
+    rpc UnRegister(Empty)              returns(Empty);              // graceful disconnect
+    rpc GetGraph(Empty)                returns(HttpHeaders)
+    {
+        option(Comment) = "Get the whole RPC subsystem status and diagnostic information";
+        option(Web).Url = "/api/rpc/graph";
+        option(Web).Method = Get;
+        option(Web).AuthNotRequired = true;
+        option(Stream) = Out;
+    }
+}
+
+// Info exchange service
+service RpcEventService
+{
+    option (ServiceId) = 1;
+    rpc UpdateInfo(RpcInfo.Instance)            returns(RpcInfo.Instance);      // exchange information between rpc servers
+}
