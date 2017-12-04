@@ -62,17 +62,6 @@ std::string GetExceptionText(const boost::exception_ptr& e)
     }
 }
 
-void ThrowHttpError(boost::uint32_t code, const std::string& message)
-{
-    auto interprocessException = boost::make_shared<proto::HttpError>();
-    interprocessException->set_code(code);
-    interprocessException->set_message(message);
-
-    auto exceptionComment = std::to_string(code) + " " + interprocessException->message();
-    BOOST_THROW_EXCEPTION(rpc::Exception(exceptionComment.c_str()) << rpc::ProtoErrorInfo(interprocessException));
-}
-
-
 namespace details
 {
 

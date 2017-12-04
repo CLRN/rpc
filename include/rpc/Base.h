@@ -101,16 +101,12 @@ public:
     RequestAndInfoHolder() : m_IsResponseRequired(), m_MethodDescriptor() {}
 
     const rpc::InstanceId& GetCaller() const { return m_InstanceId; }
-    UserId GetUser() const { return m_User; }
     bool IsResponseRequired() const { return m_IsResponseRequired; }
     const gp::MethodDescriptor& GetMethodDescriptor() const { return *m_MethodDescriptor; }
-    const std::string& GetUserIp() const { return m_UserIp; }
 protected:
     rpc::InstanceId m_InstanceId;
-    UserId m_User;
     bool m_IsResponseRequired;
     const gp::MethodDescriptor* m_MethodDescriptor;
-    std::string m_UserIp;
 };
 
 class StreamHolder

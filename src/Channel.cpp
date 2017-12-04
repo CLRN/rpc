@@ -65,21 +65,6 @@ protected:
             HandleBasePacket(stream);
     }
 
-    proto::BasePacket::DispatchType MapDispatchType2Proto(const rpc::choose::CallType type)
-    {
-        switch (type)
-        {
-        case rpc::choose::Any:          return proto::BasePacket::Any;
-        case rpc::choose::All:          return proto::BasePacket::All;
-        case rpc::choose::Unloaded:     return proto::BasePacket::Load;
-        case rpc::choose::Closest:      return proto::BasePacket::Closest;
-        case rpc::choose::Event:        return proto::BasePacket::All;
-        default:
-            assert(!"unknown type");
-            return proto::BasePacket::Any;
-        }
-    }
-
     IFuture::Ptr CallMethodImpl(const proto::BasePacket& base, const gp::Message* request, const IStream& stream)
     {
         LOG_DEBUG("->[%s]: Pushing packet: %s", m_RemoteId, base.ShortDebugString());
@@ -106,25 +91,6 @@ protected:
                 base.set_packetid(GetNextPacketId());
 
             base.set_direction(proto::BasePacket::Request);
-            base.set_dispatch(MapDispatchType2Proto(params.m_Type));
-
-            if (!params.m_Id.m_Value.empty())
-                base.set_instance(params.m_Id.m_Value);
-
-            if (params.m_Hops != std::numeric_limits<unsigned>::max())
-                base.set_ttl(params.m_Hops);
-
-            if (params.m_UserId)
-                base.set_userid(params.m_UserId);
-
-            if (!params.m_UserIp.empty())
-                base.set_userip(params.m_UserIp);
-
-            if (!params.m_Network.m_Value.empty())
-                base.set_networkid(params.m_Network.m_Value);
-
-            if (!params.m_Visited.empty())
-                boost::copy(params.m_Visited, gp::RepeatedPtrFieldBackInserter(base.mutable_visitednodes()));
         }
 
         return CallMethodImpl(base, request.get(), stream);

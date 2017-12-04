@@ -190,10 +190,8 @@ public:
         {
             void SetChannel(const rpc::ISequencedChannel::Ptr& c) { m_Channel = c; }
             void SetInstance(const rpc::InstanceId& id) { m_InstanceId = id; }
-            void SetUser(rpc::UserId id) { m_User = id; }
             void SetIsResponseRequired(bool value) { m_IsResponseRequired = value; }
             void SetMethodDescriptor(const gp::MethodDescriptor* value) { m_MethodDescriptor = value; }
-            void SetUserIp(const std::string& value) { m_UserIp = value; }
         };
 
         // set up request and response additional data
@@ -210,9 +208,7 @@ public:
         requestAccessor->SetChannel(channel);
 
         // set up caller info
-        requestAccessor->SetUser(currentBase.userid());
         requestAccessor->SetInstance(currentBase.callerid());
-        requestAccessor->SetUserIp(currentBase.userip());
 
         // when packet id is specified response is required
         requestAccessor->SetIsResponseRequired(currentBase.packetid() != 0);
