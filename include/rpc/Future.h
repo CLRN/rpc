@@ -8,7 +8,6 @@
 #include <boost/exception_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/bind.hpp>
-#include <boost/date_time/posix_time/posix_time_duration.hpp>
 
 namespace google
 {
@@ -35,7 +34,6 @@ public:
     typedef boost::shared_ptr<IFuture> Ptr;
     typedef boost::shared_ptr<std::istream> StreamPtr;
     typedef boost::function<void(const Ptr& future)> Callback;
-    typedef boost::posix_time::time_duration Duration;
 
     virtual ~IFuture() {}
 

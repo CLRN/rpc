@@ -95,8 +95,7 @@ void ServiceGenerator::GenerateStubDefinition(io::Printer* printer)
     printer->Indent();
 
     printer->Print(vars_, "$classname$_Stub(const $classname$_Stub& other); \n"
-        "$classname$_Stub(rpc::details::IChannel& channel,\n"
-        "                 const rpc::details::CallParams& params = rpc::details::CallParams()); \n"
+        "$classname$_Stub(rpc::details::IChannel& channel); \n"
         "~$classname$_Stub();\n"
         "\n"
         "// implements $classname$ ------------------------------------------\n"
@@ -107,7 +106,6 @@ void ServiceGenerator::GenerateStubDefinition(io::Printer* printer)
     printer->Outdent();
     printer->Print(vars_, " private:\n"
         "  rpc::details::IChannel* channel_;\n"
-        "  rpc::details::CallParams params_;\n"
         "};\n"
         "\n");
 }
@@ -177,13 +175,10 @@ void ServiceGenerator::GenerateImplementation(io::Printer* printer)
 
     // Generate stub implementation.
     printer->Print(vars_, "$classname$_Stub::$classname$_Stub(const $classname$_Stub& other)\n"
-        "  : channel_(other.channel_)\n"
-        "  , params_(other.params_) {}\n"
+        "  : channel_(other.channel_) {}\n"
 
-        "$classname$_Stub::$classname$_Stub(rpc::details::IChannel& channel, \n"
-        "                                   const rpc::details::CallParams& params)\n"
-        "  : channel_(&channel)\n"
-        "  , params_(params) {}\n"
+        "$classname$_Stub::$classname$_Stub(rpc::details::IChannel& channel)\n"
+        "  : channel_(&channel) {}\n"
         "$classname$_Stub::~$classname$_Stub() {\n"
         "}\n"
         "\n");
@@ -313,12 +308,11 @@ void ServiceGenerator::GenerateStubMethods(io::Printer* printer)
             {
                 printer->Print(sub_vars,
                                "rpc::Future<$output_type$> $classname$_Stub::$name$(const $input_type$& request, \n"
-                                   "   const rpc::IStream& stream) {\n"
-                                   "   return rpc::Future<$output_type$>(channel_->CallMethod(*descriptor().method($index$), \n"
-                                   "boost::make_shared<rpc::StreamRequest<$input_type$>>(stream, request), \n"
-                                   "stream, \n"
-                                   "params_));\n"
-                                   "}\n");
+                               "                                                    const rpc::IStream& stream) {\n"
+                               "    return rpc::Future<$output_type$>(channel_->CallMethod(*descriptor().method($index$), \n"
+                               "                                                           boost::make_shared<rpc::StreamRequest<$input_type$>>(stream, request), \n"
+                               "                                                           stream));\n"
+                               "}\n");
             }
             else
             {
@@ -326,8 +320,7 @@ void ServiceGenerator::GenerateStubMethods(io::Printer* printer)
                                "rpc::Future<$output_type$> $classname$_Stub::$name$(const rpc::IStream& stream) {\n"
                                    "   return rpc::Future<$output_type$>(channel_->CallMethod(*descriptor().method($index$), \n"
                                    "                                                          boost::make_shared<rpc::StreamRequest<$input_type$>>(stream), \n"
-                                   "                                                          stream, \n"
-                                   "                                                          params_));\n"
+                                   "                                                          stream));\n"
                                    "}\n");
             }
         }
@@ -337,18 +330,17 @@ void ServiceGenerator::GenerateStubMethods(io::Printer* printer)
             {
                 printer->Print(sub_vars,
                                "rpc::Future<$output_type$> $classname$_Stub::$name$(const $input_type$& request) {\n"
-                                   "   return rpc::Future<$output_type$>(channel_->CallMethod(*descriptor().method($index$), \n"
-                                   "boost::make_shared<rpc::Request<$input_type$>>(request), \n"
-                                   "rpc::IStream(), params_));\n"
-                                   "}\n");
+                               "    return rpc::Future<$output_type$>(channel_->CallMethod(*descriptor().method($index$), \n"
+                               "                                      boost::make_shared<rpc::Request<$input_type$>>(request), \n"
+                               "                                      rpc::IStream()));\n"
+                               "}\n");
             }
             else
             {
                 printer->Print(sub_vars, "rpc::Future<$output_type$> $classname$_Stub::$name$() {\n"
                     "   return rpc::Future<$output_type$>(channel_->CallMethod(*descriptor().method($index$), \n"
                     "                                                          boost::make_shared<rpc::Request<$input_type$>>(), \n"
-                    "                                                          rpc::IStream(), \n"
-                    "                                                          params_));\n"
+                    "                                                          rpc::IStream()));\n"
                     "}\n");
             }
         }

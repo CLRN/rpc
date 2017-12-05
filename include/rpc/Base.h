@@ -42,40 +42,6 @@ typedef std::string InstanceId;
 typedef boost::uint64_t UserId;
 typedef std::string NetworkId;
 
-namespace choose
-{
-
-static const unsigned MAX_HOPS = unsigned(-1);
-
-enum CallType
-{
-    Any         = 0,
-    All         = 1,
-    Unloaded    = 2,
-    Closest     = 3,
-    Event       = 4
-};
-
-struct ById
-{
-    ById() : m_Value() {}
-    ById(const InstanceId& id)
-        : m_Value(id)
-    {}
-    InstanceId m_Value;
-};
-
-struct ByNet
-{
-    ByNet() : m_Value() {}
-    ByNet(const InstanceId& id)
-        : m_Value(id)
-    {}
-    NetworkId m_Value;
-};
-
-}// namespace choose
-
 namespace details
 {
 
@@ -132,57 +98,6 @@ protected:
     std::unique_ptr<gp::Message> m_Base;
     const gp::MethodDescriptor* m_Method;
     const gp::ServiceDescriptor* m_Service;
-};
-
-struct CallParams
-{
-    template<typename ... T>
-    explicit CallParams(const T&... args) 
-        : m_Type()
-        , m_Id()
-        , m_Hops(choose::MAX_HOPS)
-        , m_UserId()
-        , m_Network()
-        , m_NoResponse(false)
-    {
-        Assign(args...);
-    }
-    void Assign()
-    {
-    }
-    template<typename ... Args>
-    void Assign(const choose::CallType type, const Args&... args)
-    {
-        m_Type = type;
-        Assign(args...);
-    }
-    template<typename ... Args>
-    void Assign(const choose::ById& id, const Args&... args)
-    {
-        m_Id = id;
-        Assign(args...);
-    }
-    template<typename ... Args>
-    void Assign(const unsigned hops, const Args&... args)
-    {
-        m_Hops = hops;
-        Assign(args...);
-    }
-    template<typename ... Args>
-    void Assign(const choose::ByNet& net, const Args&... args)
-    {
-        m_Network = net;
-        Assign(args...);
-    }
-
-    choose::CallType m_Type;
-    choose::ById m_Id;
-    unsigned m_Hops;
-    UserId m_UserId;
-    choose::ByNet m_Network;
-    bool m_NoResponse;
-    std::string m_UserIp;
-    std::set<InstanceId> m_Visited;
 };
 
 } // namespace details
@@ -246,8 +161,7 @@ public:
     virtual ~IChannel() {}
     virtual IFuture::Ptr CallMethod(const gp::MethodDescriptor& method, 
                                     const MessagePtr& request,
-                                    const IStream& stream,
-                                    const CallParams& params) = 0;
+                                    const IStream& stream) = 0;
     virtual const InstanceId& GetRemoteId() const = 0;
 };
 

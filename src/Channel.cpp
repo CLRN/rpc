@@ -76,7 +76,6 @@ protected:
 
     virtual IFuture::Ptr CallMethod(unsigned service,
                                     unsigned method,
-                                    const details::CallParams& params,
                                     const MessagePtr& request,
                                     const IStream& stream) override
     {
@@ -86,10 +85,7 @@ protected:
         {
             base.set_method(method);
             base.set_serviceid(service);
-
-            if (params.m_Type != choose::Event && !params.m_NoResponse)
-                base.set_packetid(GetNextPacketId());
-
+            base.set_packetid(GetNextPacketId());
             base.set_direction(proto::BasePacket::Request);
         }
 
@@ -98,11 +94,10 @@ protected:
 
     virtual IFuture::Ptr CallMethod(const gp::MethodDescriptor& method,
                                     const MessagePtr& request,
-                                    const IStream& stream,
-                                    const details::CallParams& params) override
+                                    const IStream& stream) override
     {
         const IService::Id id = method.service()->options().GetExtension(proto::ServiceId);
-        return CallMethod(id, method.index(), params, request, stream);
+        return CallMethod(id, method.index(), request, stream);
     }
 
     boost::uint32_t GetNextPacketId() const

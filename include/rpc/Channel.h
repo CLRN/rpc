@@ -27,7 +27,7 @@ public:
     typedef std::set<unsigned> Services;
 
     virtual ~ISequencedChannel() {}
-    virtual IFuture::Ptr CallMethod(unsigned service, unsigned method, const details::CallParams& params, const MessagePtr& request, const IStream& stream) = 0;
+    virtual IFuture::Ptr CallMethod(unsigned service, unsigned method, const MessagePtr& request, const IStream& stream) = 0;
     virtual void AddHandler(const boost::shared_ptr<details::IRequestHandler>& handler) = 0;
     virtual void OnIncomingData(const IStream& stream, const boost::exception_ptr& e) = 0;
     virtual void Close(const boost::exception_ptr& e) = 0;

@@ -12,27 +12,33 @@ find_package(Protobuf REQUIRED)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
+file(GLOB INCLUDES "include/rpc/*.h")
+add_library(rpc_includes STATIC ${INCLUDES})
+set_target_properties(rpc_includes PROPERTIES FOLDER "common/rpc" LINKER_LANGUAGE CXX)
+
+target_include_directories(rpc_includes
+
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        ${CMAKE_BINARY_DIR})
+
 file(GLOB SOURCES "include/rpc/*.h" "src/*.h" "src/*.cpp")
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "common/rpc" LINKER_LANGUAGE CXX)
 
-target_include_directories(${PROJECT_NAME}
-
-                           PUBLIC
-                           $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-                           ${CMAKE_BINARY_DIR}
-
-                           PRIVATE
-                           ${CMAKE_CURRENT_LIST_DIR}/src)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src)
 
 target_link_libraries(${PROJECT_NAME}
     lib_net
+    lib_cmn_proto
+    rpc_includes
 
     ${Protobuf_LIBRARIES}
     ${Boost_LIBRARIES}
 )
 
+set(RPC_ROOT ${CMAKE_CURRENT_LIST_DIR})
 add_subdirectory(protocols)
 
 if (WITH_TESTS)
