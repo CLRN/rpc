@@ -204,6 +204,11 @@ private:
         return m_Sink;
     }
 
+    void SetConnection(const net::IConnection::Ptr &connection) override
+    {
+        m_Sink->SetConnection(connection);
+    }
+
 protected:
     boost::asio::io_service& m_Service;
     details::IChannelSink::Ptr m_Sink;

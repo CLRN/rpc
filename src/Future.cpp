@@ -49,7 +49,7 @@ public:
         }
 
         auto future = promise->get_future();
-        while (future.is_ready())
+        while (!future.is_ready())
         {
             if (!m_Service.poll())
                 boost::this_thread::sleep_for(boost::chrono::microseconds(1));

@@ -22,10 +22,10 @@ target_include_directories(rpc_includes
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         ${CMAKE_BINARY_DIR})
 
-file(GLOB SOURCES "include/rpc/*.h" "src/*.h" "src/*.cpp")
+file(GLOB SOURCES "src/*")
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "common/rpc" LINKER_LANGUAGE CXX)
+add_library(${PROJECT_NAME} STATIC ${INCLUDES} ${SOURCES})
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "common/rpc")
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src)
 

@@ -33,6 +33,7 @@ public:
     virtual void Close(const boost::exception_ptr& e) = 0;
     virtual void SetRemoteId(const InstanceId& id) = 0;
     virtual boost::shared_ptr<details::IChannelSink> GetSink() const = 0;
+    virtual void SetConnection(const net::IConnection::Ptr& connection) = 0;
 
     static Ptr Instance(boost::asio::io_service& svc);
 };
