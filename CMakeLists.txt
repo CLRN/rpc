@@ -20,7 +20,8 @@ target_include_directories(rpc_includes
 
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        ${CMAKE_BINARY_DIR})
+        ${CMAKE_BINARY_DIR}
+        ${PROTOBUF_INCLUDE_DIR})
 
 file(GLOB SOURCES "src/*")
 
@@ -37,6 +38,10 @@ target_link_libraries(${PROJECT_NAME}
     ${Protobuf_LIBRARIES}
     ${Boost_LIBRARIES}
 )
+
+if (UNIX)
+    target_link_libraries(${PROJECT_NAME} rt)
+endif()
 
 set(RPC_ROOT ${CMAKE_CURRENT_LIST_DIR})
 add_subdirectory(protocols)

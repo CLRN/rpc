@@ -7,10 +7,8 @@ include(CMakeParseArguments)
 
 if (WIN32)
     set(PROTO_FULL_PATH "${CMAKE_BINARY_DIR}/\;${Protobuf_INCLUDE_DIR}/")
-    set(PROTOBUF_COMPILER "protoc.exe")
 else()
     set(PROTO_FULL_PATH "${CMAKE_BINARY_DIR}/:${Protobuf_INCLUDE_DIR}/")
-    set(PROTOBUF_COMPILER "protoc")
 endif()
 
 # получить имя файла без расширения
@@ -83,11 +81,11 @@ function(protobuf_generate_cpp GENERATED_HDR GENERATED_SRC)
         add_custom_command(
             PRE_BUILD
             OUTPUT ${_generatedSrc} ${_generatedHdr}
-            COMMAND "${PROTOBUF_COMPILER}"
+            COMMAND "${Protobuf_PROTOC_EXECUTABLE}"
             ARGS ${_protoFile} --cpp_out="${_outCppDir}/" "${PYTHON_OUTPUT}" --clrn_out="${_outCppDir}/" --proto_path="${PROTO_INCLUDE_PATH}" --error_format=${ERROR_FORMAT} --plugin=$<TARGET_FILE:protoc-gen-clrn>
             WORKING_DIRECTORY "${WORKING_FOLDER}"
             DEPENDS ${_protoFile} copy_${_protoName} protoc-gen-clrn
-            COMMENT "Proto file: ${_protoName}, exec ${PROTOBUF_COMPILER} in ${WORKING_FOLDER}: ${_protoFile} --cpp_out=${_outCppDir} ${PYTHON_OUTPUT} --clrn_out=${_outCppDir} --proto_path=${PROTO_INCLUDE_PATH} --error_format=${ERROR_FORMAT} --plugin=$<TARGET_FILE:protoc-gen-clrn>"
+            COMMENT "Proto file: ${_protoName}, exec ${Protobuf_PROTOC_EXECUTABLE} in ${WORKING_FOLDER}: ${_protoFile} --cpp_out=${_outCppDir} ${PYTHON_OUTPUT} --clrn_out=${_outCppDir} --proto_path=${PROTO_INCLUDE_PATH} --error_format=${ERROR_FORMAT} --plugin=$<TARGET_FILE:protoc-gen-clrn>"
         )
     endforeach()
     

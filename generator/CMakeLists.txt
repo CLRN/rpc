@@ -5,6 +5,8 @@ file(GLOB HEADERS "*.h" "*.rc" "*.def")
 
 find_package(Protobuf REQUIRED)
 
+include_directories(${PROTOBUF_INCLUDE_DIR})
+
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "tools")
 target_link_libraries(${PROJECT_NAME}
