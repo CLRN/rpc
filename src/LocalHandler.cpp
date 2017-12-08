@@ -235,6 +235,8 @@ public:
             }
             catch (const std::exception& e)
             {
+                LOG_ERROR("Handler %s failed with %s", methodDesc->full_name(), boost::diagnostic_information(e));
+
                 details::ProcessAbstractException(e,
                                                   responseAccessor->GetBase(),
                                                   methodDesc->full_name(),
