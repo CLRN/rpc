@@ -8,20 +8,13 @@
 #include <boost/exception_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/bind.hpp>
+#include <boost/asio/io_service.hpp>
 
 namespace google
 {
 namespace protobuf
 {
     class Message;
-}
-}
-
-namespace boost
-{
-namespace asio
-{
-    class io_service;
 }
 }
 
