@@ -12,7 +12,7 @@ find_package(Protobuf REQUIRED)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-file(GLOB INCLUDES "include/rpc/*.h")
+file(GLOB INCLUDES "include/rpc/*.h" "src/Dummy.cpp")
 add_library(rpc_includes STATIC ${INCLUDES})
 set_target_properties(rpc_includes PROPERTIES FOLDER "common/rpc" LINKER_LANGUAGE CXX)
 
@@ -39,7 +39,7 @@ target_link_libraries(${PROJECT_NAME}
     ${Boost_LIBRARIES}
 )
 
-if (UNIX)
+if (NOT APPLE AND UNIX)
     target_link_libraries(${PROJECT_NAME} rt)
 endif()
 

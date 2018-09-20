@@ -125,7 +125,8 @@ class StreamRequest : public T, public details::RequestAndInfoHolder, public det
 {
 public:
     template<typename ...Arg>
-    StreamRequest(const IStream& s = IStream(), Arg... var) : T(var...), details::StreamHolder(s) {}
+    StreamRequest(const IStream& s, Arg... var) : T(var...), details::StreamHolder(s) {}
+    StreamRequest() {}
     typedef boost::shared_ptr<StreamRequest<T> > Ptr;
 };
 

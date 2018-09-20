@@ -66,7 +66,7 @@ void ServiceGenerator::GenerateInterface(io::Printer* printer)
     printer->Print("\n"
                        "// implements Service ----------------------------------------------\n"
                        "\n"
-                       "const ::google::protobuf::ServiceDescriptor& GetDescriptor();\n"
+                       "const ::google::protobuf::ServiceDescriptor& GetDescriptor() override;\n"
                        "virtual void CallMethod(const ::google::protobuf::MethodDescriptor& method,\n"
                        "                        const rpc::MessagePtr& request,\n"
                        "                        const rpc::MessagePtr& response) override;\n"
@@ -273,12 +273,12 @@ void ServiceGenerator::GenerateGetPrototype(RequestOrResponse which, io::Printer
         if (which == REQUEST)
         {
             printer->Print(sub_vars, "    case $index$:\n"
-                "      return new rpc::$request_type$<$type$>;\n");
+                "      return new rpc::$request_type$<$type$>();\n");
         }
         else
         {
             printer->Print(sub_vars, "    case $index$:\n"
-                "      return new rpc::$response_type$<$type$>;\n");
+                "      return new rpc::$response_type$<$type$>();\n");
         }
     }
 

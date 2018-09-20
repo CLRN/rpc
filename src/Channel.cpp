@@ -57,7 +57,7 @@ public:
 
 protected:
 
-    virtual void OnIncomingData(const IStream& stream, const boost::exception_ptr& e)
+    virtual void OnIncomingData(const IStream& stream, const boost::exception_ptr& e) override
     {
         if (!stream)
             Close(e);

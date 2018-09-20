@@ -4,6 +4,7 @@
 #include <tuple>
 #include <exception>
 #include <sstream>
+#include <memory>
 
 namespace clrn
 {
@@ -13,7 +14,6 @@ namespace compiler
 {
 
 using google::protobuf::io::ZeroCopyOutputStream;
-using google::protobuf::internal::scoped_ptr;
 using namespace std;
 
 namespace
@@ -67,7 +67,7 @@ bool RpcGenerator::Generate(const FileDescriptor * file, const string & /*parame
             const string& insertPoint = get<1>(patch);
             GenFunc func = get<2>(patch);
 
-            scoped_ptr<ZeroCopyOutputStream> output(context->OpenForInsert(fileName, insertPoint));
+            std::unique_ptr<ZeroCopyOutputStream> output(context->OpenForInsert(fileName, insertPoint));
             if (!output.get())
             {
                 ostringstream oss;
